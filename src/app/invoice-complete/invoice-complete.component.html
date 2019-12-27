@@ -1,0 +1,130 @@
+<div *ngIf="loading" class="overlay">
+    <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="row">
+            <div class="col-12">
+                <img src="assets/banner.jfif" [class.center-image]="!isMobileResolution" [class.center-image-mobile]="isMobileResolution" />
+                <br />
+                <br />
+            </div>
+        </div>
+        <br />
+        <h3>Summary</h3>
+        <div class="row" *ngIf="!isMobileResolution">
+            <div class="col-12">
+                <div class="row" *ngIf="invoices.length > 0">
+                    <div class="col-12">
+                        <mat-table [dataSource]="dataSource">
+                            <ng-container matColumnDef="invoiceNumber">
+                                <mat-header-cell *matHeaderCellDef>Invoice Number</mat-header-cell>
+                                <mat-cell *matCellDef="let element">{{ element.invoiceNumber }}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef><b>Totals</b></mat-footer-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="invoiceNet">
+                                <mat-header-cell *matHeaderCellDef>Net</mat-header-cell>
+                                <mat-cell *matCellDef="let element">{{ customFormatCurrency(element.invoiceNet) }}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef>{{ customFormatCurrency(getRounded(calculateTotalNet())) }}</mat-footer-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="invoiceTax">
+                                <mat-header-cell *matHeaderCellDef>% Tax</mat-header-cell>
+                                <mat-cell *matCellDef="let element">{{ element.invoiceTax }}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="invoiceTaxTotal">
+                                <mat-header-cell *matHeaderCellDef>Tax</mat-header-cell>
+                                <mat-cell *matCellDef="let element">{{ customFormatCurrency(getRounded(element.invoiceNet * element.invoiceTax / 100)) }}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef>{{ customFormatCurrency(getRounded(calculateTotalTax())) }}</mat-footer-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="invoiceTotal">
+                                <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+                                <mat-cell *matCellDef="let element">{{ customFormatCurrency(getRounded(element.invoiceNet * ( 1 + element.invoiceTax / 100))) }}</mat-cell>
+                                <mat-footer-cell *matFooterCellDef>{{ customFormatCurrency(getRounded(calculateTotal()))}}</mat-footer-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns; let i = index;" ></mat-row>
+                            <mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></mat-footer-row>
+                        </mat-table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <div class="float-right">
+                            <button class="btn btn-primary" aria-label="Delete Work" (click)="deleteWork()">
+                                Delete Work
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="isMobileResolution">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <table *ngFor="let element of invoices; let i= index" class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Invoice Number</th>
+                                    <th scope="col">{{ element.invoiceNumber }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Net</td>
+                                    <td class="float-right">{{ customFormatCurrency(element.invoiceNet) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>% Tax</td>
+                                    <td class="float-right">{{ element.invoiceTax }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax</td>
+                                    <td class="float-right">{{ customFormatCurrency(getRounded(element.invoiceNet * element.invoiceTax / 100)) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td class="float-right">{{ customFormatCurrency(getRounded(element.invoiceNet * ( 1 + element.invoiceTax / 100))) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col" colspan="2">Totals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Net</td>
+                                    <td class="float-right">{{ customFormatCurrency(getRounded(calculateTotalNet())) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tax</td>
+                                    <td class="float-right">{{ customFormatCurrency(getRounded(calculateTotalTax())) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td class="float-right">{{ customFormatCurrency(getRounded(calculateTotal())) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button name="btnDeleteWork" style="width: 100%;" class="btn btn-primary" aria-label="Delete Work" (click)="deleteWork()">
+                            Delete Work
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
